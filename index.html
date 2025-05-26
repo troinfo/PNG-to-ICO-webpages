@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to ICO Converter</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1em;
+    }
+
+    .main-content {
+      padding: 40px;
+    }
+
+    .upload-section {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 2px dashed #dee2e6;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .upload-section:hover {
+      border-color: #4facfe;
+      background: #f0f8ff;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .file-input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-input-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .file-input-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .format-selector {
+      margin: 20px 0;
+    }
+
+    .format-selector select {
+      padding: 10px 15px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 16px;
+      background: white;
+      min-width: 200px;
+    }
+
+    .preview-section {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .preview-image {
+      max-width: 100px;
+      max-height: 100px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .convert-section {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .convert-btn {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      padding: 15px 40px;
+      border: none;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 10px;
+    }
+
+    .convert-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(255,107,107,0.3);
+    }
+
+    .convert-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .options {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .checkbox-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px;
+    }
+
+    .loading-section {
+      text-align: center;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .loading-animation {
+      width: 60px;
+      height: 60px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4facfe;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #f3f3f3;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 4px;
+    }
+
+    .download-section {
+      text-align: center;
+      margin: 30px 0;
+      display: none;
+    }
+
+    .download-link {
+      background: linear-gradient(135deg, #10ac84 0%, #1dd1a1 100%);
+      color: white;
+      padding: 15px 30px;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .download-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(16,172,132,0.3);
+    }
+
+    .banner-ad {
+      background: #f8f9fa;
+      border-top: 1px solid #dee2e6;
+      padding: 40px;
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🖼️ Image to ICO Converter</h1>
+      <p>Convert your images to ICO format quickly and easily</p>
+    </div>
+
+    <div class="main-content">
+      <div class="upload-section">
+        <div class="file-input-wrapper">
+          <input type="file" id="imageInput" class="file-input" accept="image/*" />
+          <button class="file-input-button">📁 Choose Image File</button>
+        </div>
+        
+        <div class="format-selector">
+          <label for="formatSelect">Convert from:</label>
+          <select id="formatSelect">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPEG/JPG</option>
+            <option value="image/gif">GIF</option>
+            <option value="image/bmp">BMP</option>
+            <option value="image/webp">WebP</option>
+            <option value="image/tiff">TIFF</option>
+          </select>
+        </div>
+
+        <div class="preview-section">
+          <h3>Preview:</h3>
+          <img id="previewImage" class="preview-image" alt="Preview" />
+          <p id="imageInfo" style="margin-top: 10px; color: #666; display: none;"></p>
+        </div>
+      </div>
+
+      <div class="options">
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="skipAnimation" />
+          <label for="skipAnimation">Skip conversion animation</label>
+        </div>
+      </div>
+
+      <div class="convert-section">
+        <button id="convertBtn" class="convert-btn" disabled>🔄 Convert to ICO</button>
+      </div>
+
+      <div class="loading-section" id="loadingSection">
+        <div class="loading-animation"></div>
+        <h3>Converting your image...</h3>
+        <p>Creating your ICO file with multiple sizes</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p id="loadingText">Initializing...</p>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        ✅ Conversion completed successfully!
+      </div>
+
+      <div class="error-message" id="errorMessage">
+        ❌ <span id="errorText">An error occurred during conversion.</span>
+      </div>
+
+      <div class="download-section" id="downloadSection">
+        <h3>Your ICO file is ready!</h3>
+        <a id="downloadLink" class="download-link">📥 Download ICO File</a>
+      </div>
+    </div>
+
+    <div class="banner-ad">
+      <h3>Advertisement Space</h3>
+      <p>This space can be used for banner advertisements</p>
+      <div style="height: 150px; background: #e9ecef; border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: center;">
+        <span style="color: #6c757d;">Banner Ad Placeholder (728x90 or 300x250)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link to external JavaScript file -->
+  <script src="converter.js"></script>
+</body>
+</html>
