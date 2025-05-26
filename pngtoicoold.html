@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PNG to ICO Converter</title>
+</head>
+<body>
+  <h1>PNG to ICO Converter</h1>
+  <input type="file" id="pngInput" accept="image/png" />
+  <button id="convertBtn">Convert to ICO</button>
+  <div id="loadingMessage" style="display:none;">Processing your file...</div>
+  <a id="downloadLink" style="display:none;">Download ICO</a>
+
+  <script src="path/to/ico.js"></script>
+  <script>
+    document.getElementById('convertBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('pngInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Please select a PNG file.');
+        return;
+      }
+
+      // Show loading message
+      const loadingMessage = document.getElementById('loadingMessage');
+      loadingMessage.style.display = 'block';
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const arrayBuffer = e.target.result;
+
+        try {
+          const blob = new Blob([arrayBuffer], { type: 'image/x-icon' }); // Placeholder
+          const downloadLink = document.getElementById('downloadLink');
+          downloadLink.href = URL.createObjectURL(blob);
+          downloadLink.download = 'favicon.ico';
+          downloadLink.style.display = 'block';
+          downloadLink.textContent = 'Download ICO';
+        } catch (error) {
+          console.error('Conversion failed:', error);
+          alert('Failed to convert PNG to ICO.');
+        } finally {
+          loadingMessage.style.display = 'none'; // Hide loading message
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+</body>
+</html>
